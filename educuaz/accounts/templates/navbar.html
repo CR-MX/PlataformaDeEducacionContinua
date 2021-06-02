@@ -18,7 +18,11 @@
       <li class="nav-item active">
         <a class="nav-link" href="{% url 'home' %}">Home</a>
       </li>
-
+         {% if request.user.is_staff %}
+        <li class="nav-item active">
+         <a class="nav-link">Lista de Alumnos</a>
+      </li>
+        {% endif %}
     </ul>
   </div>
 

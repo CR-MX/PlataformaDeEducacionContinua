@@ -6,21 +6,31 @@ from django.contrib.auth import authenticate, login, logout
 from .models import *
 from .forms import CreateUserForm
 from django.contrib.auth.decorators import login_required
+# decoradores sustituyen la funcionalidad
+from django.contrib.auth.models import Group
+from .decorators import unauthenticated_user
 
 
+
+@unauthenticated_user
 def registerPage(request):
     form = CreateUserForm()
     if request.method == 'POST':
         form = CreateUserForm(request.POST)
         if form.is_valid():
-            form.save()
-            user = form.cleaned_data.get('username')
-            messages.success(request, 'Account was created for' + user)
+            user = form.save()
+            username = form.cleaned_data.get('username')
+            # ahora los que agrage van a ser alumnos
+            group = Group.objects.get(name='Alumno')
+            user.groups.add(group)
+
+            messages.success(request, 'Account was created for' + username)
             return redirect('login')
     context = {'form': form}
     return render(request, 'register.html', context)
 
 
+@unauthenticated_user
 def loginPage(request):
     if request.user.is_authenticated:
         return redirect('home')
